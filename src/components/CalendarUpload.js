@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import ICAL from 'ical.js';
+import ical from 'node-ical';
 
 const CalendarUpload = ({ onEventsLoad }) => {
   const [isDragging, setIsDragging] = useState(false);
@@ -40,20 +40,7 @@ const CalendarUpload = ({ onEventsLoad }) => {
 
     try {
       const text = await file.text();
-      const jcalData = ICAL.parse(text);
-      const comp = new ICAL.Component(jcalData);
-      const vevents = comp.getAllSubcomponents('vevent');
-
-      const events = vevents.map(vevent => {
-        const event = new ICAL.Event(vevent);
-        return {
-          title: event.summary,
-          start: event.startDate.toJSDate(),
-          end: event.endDate.toJSDate(),
-          location: event.location || null
-        };
-      });
-
+      const events = await parseICalEvents(text);
       onEventsLoad(events);
       setError(null);
     } catch (err) {
@@ -64,6 +51,30 @@ const CalendarUpload = ({ onEventsLoad }) => {
     }
   };
 
+  const parseICalEvents = async (icalData) => {
+    return new Promise((resolve, reject) => {
+      const events = [];
+      ical.parseICS(icalData, (err, data) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        
+        for (let k in data) {
+          if (data[k].type === 'VEVENT') {
+            events.push({
+              title: data[k].summary,
+              start: data[k].start,
+              end: data[k].end,
+              location: data[k].location || null
+            });
+          }
+        }
+        resolve(events);
+      });
+    });
+  };
+
   const handleExampleClick = async () => {
     try {
       setLoading(true);
@@ -71,21 +82,7 @@ const CalendarUpload = ({ onEventsLoad }) => {
       
       const response = await fetch('/example.ics');
       const text = await response.text();
-      
-      const jcalData = ICAL.parse(text);
-      const comp = new ICAL.Component(jcalData);
-      const vevents = comp.getAllSubcomponents('vevent');
-
-      const events = vevents.map(vevent => {
-        const event = new ICAL.Event(vevent);
-        return {
-          title: event.summary,
-          start: event.startDate.toJSDate(),
-          end: event.endDate.toJSDate(),
-          location: event.location || null
-        };
-      });
-
+      const events = await parseICalEvents(text);
       onEventsLoad(events);
     } catch (err) {
       console.error('載入範例檔案時發生錯誤:', err);
