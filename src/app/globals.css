@@ -3,52 +3,171 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-rgb: 249, 250, 251;
+  --primary: #3b82f6;
+  --primary-dark: #2563eb;
+  --secondary: #64748b;
+  --background: #f8fafc;
+  --surface: #ffffff;
+  --text: #1e293b;
+  --text-light: #64748b;
+  --error: #ef4444;
+  --warning: #f59e0b;
+  --success: #10b981;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-rgb));
+  background-color: var(--background);
+  color: var(--text);
 }
 
-/* Calendar styles */
-.calendar-container {
-  min-height: 600px;
-  background-color: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  padding: 1rem;
+/* 按鈕動畫效果 */
+.btn-primary {
+  @apply px-4 py-2 bg-blue-600 text-white rounded-lg 
+         transition-all duration-200 
+         hover:bg-blue-700 hover:shadow-md
+         active:transform active:scale-95 
+         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
 }
 
-/* Weather card styles */
+.btn-secondary {
+  @apply px-4 py-2 bg-gray-100 text-gray-700 rounded-lg 
+         transition-all duration-200 
+         hover:bg-gray-200 hover:shadow-sm
+         active:transform active:scale-95 
+         focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2;
+}
+
+/* 卡片懸浮效果 */
+.hover-card {
+  @apply transition-all duration-300 
+         hover:shadow-lg hover:-translate-y-1;
+}
+
+/* 輸入框效果 */
+.input-primary {
+  @apply w-full px-4 py-2 rounded-lg border border-gray-300
+         transition-all duration-200
+         focus:border-blue-500 focus:ring-2 focus:ring-blue-200
+         placeholder:text-gray-400;
+}
+
+/* 標題動畫 */
+.title-animation {
+  @apply transition-opacity duration-300;
+}
+
+.title-animation:hover {
+  @apply opacity-80;
+}
+
+/* 互動圖標 */
+.icon-button {
+  @apply p-2 rounded-full transition-colors duration-200
+         hover:bg-gray-100 active:bg-gray-200
+         focus:outline-none focus:ring-2 focus:ring-gray-300;
+}
+
+/* 載入動畫 */
+.loading-spinner {
+  @apply animate-spin rounded-full border-4 border-gray-200;
+  border-top-color: var(--primary);
+}
+
+/* 天氣卡片效果 */
 .weather-card {
-  background-color: white;
-  border-radius: 0.5rem;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.weather-warning {
-  background-color: #fef2f2;
-  border: 1px solid #fee2e2;
-  color: #991b1b;
+  @apply bg-white rounded-lg shadow-sm p-4
+         transition-all duration-300
+         hover:shadow-md;
 }
 
 .weather-info {
-  background-color: #f0f9ff;
-  border: 1px solid #e0f2fe;
-  color: #075985;
+  @apply space-y-2 text-sm;
 }
 
-/* Loading spinner */
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+/* 日曆格子效果 */
+.calendar-cell {
+  @apply p-2 text-center relative border transition-colors duration-200
+         hover:bg-gray-50 cursor-pointer;
+}
+
+.calendar-cell.active {
+  @apply bg-blue-50 border-blue-200;
+}
+
+.calendar-cell.today {
+  @apply font-bold text-blue-600;
+}
+
+/* 警告標籤 */
+.warning-badge {
+  @apply px-2 py-1 text-xs rounded-full
+         bg-yellow-100 text-yellow-800
+         transition-all duration-200
+         hover:bg-yellow-200;
+}
+
+.danger-badge {
+  @apply px-2 py-1 text-xs rounded-full
+         bg-red-100 text-red-800
+         transition-all duration-200
+         hover:bg-red-200;
+}
+
+/* 工具提示 */
+.tooltip {
+  @apply invisible absolute z-10 px-3 py-2 text-sm
+         bg-gray-900 text-white rounded-lg opacity-0
+         transition-all duration-200
+         group-hover:visible group-hover:opacity-100;
+}
+
+/* 漸變背景 */
+.gradient-bg {
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.1) 0%,
+    rgba(37, 99, 235, 0.1) 100%
+  );
+}
+
+/* 滾動條美化 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 rounded-full;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 rounded-full
+         hover:bg-gray-400 transition-colors duration-200;
+}
+
+/* 文字漸變效果 */
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r
+         from-blue-600 to-indigo-600;
+}
+
+/* 動畫效果 */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* 響應式調整 */
+@media (max-width: 640px) {
+  .calendar-cell {
+    @apply p-1 text-sm;
   }
-}
-
-.spinner {
-  animation: spin 1s linear infinite;
+  
+  .weather-card {
+    @apply p-3;
+  }
 }
