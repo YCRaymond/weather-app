@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 天氣行事曆
 
 一個整合中央氣象署天氣資料的行事曆應用程式，可以查看行程地點的天氣預報。
@@ -110,3 +111,6 @@ cp public/example.ics test.ics
 ## 授權條款
 
 MIT License
+=======
+# weather-app
+>>>>>>> 5218382a96e601426a8ccde507ac8872b673bea6
