@@ -1,36 +1,112 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 天氣行事曆
 
-## Getting Started
+一個整合中央氣象署天氣資料的行事曆應用程式，可以查看行程地點的天氣預報。
 
-First, run the development server:
+## 功能特色
 
+- 📅 支援 .ics 格式行事曆匯入
+- 🌤️ 顯示即時天氣資訊
+- 🌡️ 顯示溫度和降雨機率
+- 📍 支援地理位置天氣查詢
+- ⚠️ 天氣警特報提醒
+- 📱 響應式設計
+
+## 快速開始
+
+1. 安裝依賴
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. 設定環境變數
+```bash
+# 編輯 .env.local
+NEXT_PUBLIC_CWB_API_KEY=你的API金鑰
+```
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+3. 啟動開發伺服器
+```bash
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. 開啟瀏覽器訪問
+```
+http://localhost:3000
+```
 
-## Learn More
+## 系統需求
 
-To learn more about Next.js, take a look at the following resources:
+- Node.js 18.17.0 或更新版本
+- 中央氣象署 API 金鑰 (申請網址: https://opendata.cwa.gov.tw/)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 使用技術
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Next.js 14
+- Tailwind CSS
+- 中央氣象署 OpenAPI
+- React
+- Date-fns
 
-## Deploy on Vercel
+## 部署方式
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. 克隆專案
+```bash
+git clone https://github.com/你的使用者名稱/weather-app.git
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+2. 安裝依賴
+```bash
+cd weather-app
+npm install
+```
+
+3. 設定環境變數
+```bash
+cp .env.example .env.local
+# 編輯 .env.local 填入你的 API 金鑰
+```
+
+4. 建置專案
+```bash
+npm run build
+```
+
+5. 啟動伺服器
+```bash
+npm start
+```
+
+## 開發指南
+
+1. 使用初始化腳本
+```bash
+./init.sh
+```
+
+2. 檢查系統狀態
+```bash
+# 訪問診斷頁面
+http://localhost:3000/diagnostics
+```
+
+3. 使用測試資料
+```bash
+# 使用範例行事曆
+cp public/example.ics test.ics
+```
+
+## 問題排解
+
+如果遇到問題，請參考：
+
+- SETUP.md - 設定指南
+- TROUBLESHOOT.md - 故障排除指南
+- SOLUTION.md - 解決方案說明
+
+## 貢獻指南
+
+歡迎提交 Pull Request 或建立 Issue！
+
+## 授權條款
+
+MIT License
