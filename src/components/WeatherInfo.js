@@ -6,7 +6,8 @@ const WeatherInfo = ({ weatherData }) => {
       <div className="weather-card animate-fadeIn">
         <h2 className="text-xl font-bold mb-4">天氣資訊</h2>
         <div className="flex items-center justify-center h-32 text-gray-500">
-          <p>暫無天氣資料</p>
+          <div className="loading-spinner mr-3"></div>
+          <p>正在載入天氣資料...</p>
         </div>
       </div>
     );
@@ -116,7 +117,7 @@ const WeatherInfo = ({ weatherData }) => {
           {/* 基本天氣資訊 */}
           <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg group hover:bg-blue-100 transition-colors duration-200">
             <div>
-              <p className="text-sm text-blue-600 mb-1">{data.LocationName || '觀測站'}</p>
+              <p className="text-sm text-blue-600 mb-1">{data.LocationName || data.StationName || '觀測站'}</p>
               <div className="flex items-center">
                 <span className="text-4xl mr-3">
                   {getWeatherIcon(weather, data.Temp)}
@@ -165,7 +166,7 @@ const WeatherInfo = ({ weatherData }) => {
             <svg className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            {data.ObsTime ? formatDateTime(data.ObsTime) : '更新中'}
+            {formatDateTime(data.ObsTime)}
           </div>
         </div>
       </div>
