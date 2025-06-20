@@ -41,7 +41,7 @@ const WeatherAlerts = ({ weatherData }) => {
         // 顯示測試通知
         new Notification('天氣提醒已開啟', {
           body: '您將會收到重要的天氣提醒通知',
-          icon: '/weather-icon.png'  // 請確保有此圖片
+          icon: '/globe.svg'
         });
       }
     } catch (error) {
@@ -55,8 +55,51 @@ const WeatherAlerts = ({ weatherData }) => {
     if (Notification.permission === 'granted') {
       new Notification(alert.title, {
         body: alert.message,
-        icon: '/weather-icon.png'
+        icon: '/globe.svg'
       });
+    }
+  };
+
+  // 檢查目前時間是否應該發送通知
+  const shouldSendNotification = (alert) => {
+    const now = new Date();
+    const hour = now.getHours();
+    
+    // 只在早上 6 點到晚上 10 點之間發送通知
+    if (hour < 6 || hour > 22) {
+      return false;
+    }
+
+    // 根據提醒類型決定是否立即發送
+    switch (alert.type) {
+      case 'special':
+      case 'danger':
+        return true;
+      case 'warning':
+        // 每小時只發送一次警告級別的提醒
+        const lastWarningTime = localStorage.getItem(`lastWarning_${alert.title}`);
+        if (!lastWarningTime || (Date.now() - parseInt(lastWarningTime)) > 3600000) {
+          localStorage.setItem(`lastWarning_${alert.title}`, Date.now().toString());
+          return true;
+        }
+        return false;
+      case 'info':
+        // 每天只發送一次資訊級別的提醒
+        const lastInfoTime = localStorage.getItem(`lastInfo_${alert.title}`);
+        if (!lastInfoTime || (Date.now() - parseInt(lastInfoTime)) > 86400000) {
+          localStorage.setItem(`lastInfo_${alert.title}`, Date.now().toString());
+          return true;
+        }
+        return false;
+      default:
+        return false;
+    }
+  };
+
+  // 處理提醒點擊
+  const handleAlertClick = (alert) => {
+    if (shouldSendNotification(alert)) {
+      sendNotification(alert);
     }
   };
 
@@ -80,8 +123,9 @@ const WeatherAlerts = ({ weatherData }) => {
         {displayedAlerts.map((alert, index) => (
           <div
             key={index}
-            className={`p-4 border-l-4 rounded-r-lg transition-all duration-200 hover:transform hover:-translate-y-1 ${getLevelStyles(alert.level)}`}
-            onClick={() => sendNotification(alert)}
+            className={`p-4 border-l-4 rounded-r-lg transition-all duration-200 hover:transform hover:-translate-y-1 cursor-pointer ${getLevelStyles(alert.level)}`}
+            onClick={() => handleAlertClick(alert)}
+            title="點擊發送通知提醒"
           >
             <div className="flex items-start">
               <div className="text-2xl mr-3">{alert.icon}</div>
