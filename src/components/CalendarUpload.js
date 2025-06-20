@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import ical from 'node-ical';
+import { parseICS } from 'ical-js-parser';
 
 const CalendarUpload = ({ onEventsLoad }) => {
   const [isDragging, setIsDragging] = useState(false);
@@ -40,7 +40,15 @@ const CalendarUpload = ({ onEventsLoad }) => {
 
     try {
       const text = await file.text();
-      const events = await parseICalEvents(text);
+      const icsData = parseICS(text);
+      
+      const events = icsData.events.map(event => ({
+        title: event.summary || '未命名事件',
+        start: new Date(event.dtstart.value),
+        end: new Date(event.dtend.value),
+        location: event.location || null
+      }));
+
       onEventsLoad(events);
       setError(null);
     } catch (err) {
@@ -51,30 +59,6 @@ const CalendarUpload = ({ onEventsLoad }) => {
     }
   };
 
-  const parseICalEvents = async (icalData) => {
-    return new Promise((resolve, reject) => {
-      const events = [];
-      ical.parseICS(icalData, (err, data) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        
-        for (let k in data) {
-          if (data[k].type === 'VEVENT') {
-            events.push({
-              title: data[k].summary,
-              start: data[k].start,
-              end: data[k].end,
-              location: data[k].location || null
-            });
-          }
-        }
-        resolve(events);
-      });
-    });
-  };
-
   const handleExampleClick = async () => {
     try {
       setLoading(true);
@@ -82,7 +66,15 @@ const CalendarUpload = ({ onEventsLoad }) => {
       
       const response = await fetch('/example.ics');
       const text = await response.text();
-      const events = await parseICalEvents(text);
+      const icsData = parseICS(text);
+      
+      const events = icsData.events.map(event => ({
+        title: event.summary || '未命名事件',
+        start: new Date(event.dtstart.value),
+        end: new Date(event.dtend.value),
+        location: event.location || null
+      }));
+
       onEventsLoad(events);
     } catch (err) {
       console.error('載入範例檔案時發生錯誤:', err);
