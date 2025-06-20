@@ -9,13 +9,33 @@ const EventWeatherCard = ({ event }) => {
       if (isNaN(date.getTime())) {
         throw new Error('無效的日期');
       }
-      return date.toLocaleString('zh-TW', {
-        weekday: 'long',
-        month: 'long',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric'
+      
+      // 返回更緊湊的日期格式
+      const today = new Date();
+      const isToday = date.toDateString() === today.toDateString();
+      const isThisYear = date.getFullYear() === today.getFullYear();
+
+      const time = date.toLocaleTimeString('zh-TW', {
+        hour: '2-digit',
+        minute: '2-digit'
       });
+
+      if (isToday) {
+        return `今天 ${time}`;
+      }
+      
+      if (isThisYear) {
+        return date.toLocaleDateString('zh-TW', {
+          month: 'short',
+          day: 'numeric'
+        }) + ` ${time}`;
+      }
+      
+      return date.toLocaleDateString('zh-TW', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      }) + ` ${time}`;
     } catch (error) {
       console.warn('日期格式錯誤:', error);
       return '時間未知';
@@ -24,7 +44,6 @@ const EventWeatherCard = ({ event }) => {
 
   const getWeatherIcon = (weather, temp) => {
     if (!weather) {
-      // 根據溫度判斷
       if (!temp) return '🌤️';
       if (temp >= 30) return '🌞';
       if (temp <= 15) return '❄️';
@@ -35,21 +54,6 @@ const EventWeatherCard = ({ event }) => {
     if (weather.includes('陰')) return '☁️';
     if (weather.includes('晴')) return '☀️';
     return '⛅';
-  };
-
-  const getComfortLevel = (temp, humd) => {
-    if (!temp || !humd) return null;
-    
-    const comfort = temp > 30 ? { text: '悶熱', color: 'text-red-600' } :
-                   temp > 26 ? { text: '偏熱', color: 'text-orange-600' } :
-                   temp < 16 ? { text: '寒冷', color: 'text-blue-600' } :
-                   temp < 20 ? { text: '偏涼', color: 'text-cyan-600' } : 
-                   { text: '舒適', color: 'text-green-600' };
-    
-    return {
-      ...comfort,
-      description: `溫度 ${temp}°C，濕度 ${(humd * 100).toFixed(0)}%`
-    };
   };
 
   const getTemperature = (weatherData, weatherForecast) => {
@@ -69,9 +73,6 @@ const EventWeatherCard = ({ event }) => {
   };
 
   const temp = getTemperature(event.weatherData, event.weatherForecast);
-  const comfort = temp && event.weatherData ? 
-    getComfortLevel(temp, event.weatherData.HUMD) : 
-    null;
   const weather = event.weatherData?.Weather || 
                  event.weatherForecast?.weatherElements?.Wx?.[0]?.value;
 
@@ -80,67 +81,62 @@ const EventWeatherCard = ({ event }) => {
     ...event.weatherData,
     forecast: event.weatherForecast,
     warnings: event.weatherWarning ? [event.weatherWarning] : []
-  });
-
-  const getAlertStyle = (level) => {
-    switch (level) {
-      case 'danger':
-        return 'bg-red-100 text-red-800';
-      case 'warning':
-        return 'bg-yellow-100 text-yellow-800';
-      default:
-        return 'bg-blue-100 text-blue-800';
-    }
-  };
+  }).slice(0, 2); // 只顯示最重要的兩個提醒
 
   return (
-    <div className="bg-white rounded-lg shadow-sm p-4 mb-4 border border-gray-200 hover:shadow-md transition-shadow">
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <h3 className="font-semibold text-lg text-gray-800">{event.title || '未命名事件'}</h3>
-          <p className="text-sm text-gray-600 mt-1">{formatDate(event.start)}</p>
+    <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow p-3 animate-fadeIn">
+      <div className="flex items-start space-x-3">
+        {/* 日期和標題 */}
+        <div className="flex-1 min-w-0">
+          <h3 className="font-medium text-gray-900 truncate">{event.title || '未命名事件'}</h3>
+          <p className="text-sm text-gray-500 mt-1 flex items-center">
+            <svg className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {formatDate(event.start)}
+          </p>
           {event.location && (
-            <p className="text-sm text-gray-500 mt-1 flex items-center">
-              <span className="mr-1">📍</span> {event.location}
+            <p className="text-sm text-gray-500 mt-1 flex items-center truncate">
+              <svg className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              {event.location}
             </p>
           )}
         </div>
-        <div className="text-right flex-shrink-0 ml-4">
+
+        {/* 天氣圖示和溫度 */}
+        <div className="text-right flex-shrink-0">
           <div className="text-2xl mb-1">
             {getWeatherIcon(weather, temp)}
           </div>
           {temp && (
-            <div className="text-lg font-medium text-gray-700">
+            <div className="text-sm font-medium text-gray-700">
               {temp.toFixed(1)}°C
             </div>
           )}
         </div>
       </div>
 
-      {/* 舒適度和提醒區域 */}
-      <div className="mt-3 space-y-3">
-        {comfort && (
-          <p className={`text-sm ${comfort.color} font-medium`}>
-            {comfort.text}・{comfort.description}
-          </p>
-        )}
-        
-        {/* 天氣提醒 */}
-        {alerts.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {alerts.map((alert, index) => (
-              <div
-                key={index}
-                className={`text-sm px-3 py-1 rounded-full inline-flex items-center ${getAlertStyle(alert.level)}`}
-                title={alert.message}
-              >
-                <span className="mr-1">{alert.icon}</span>
-                {alert.title}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      {/* 天氣提醒標籤 */}
+      {alerts.length > 0 && (
+        <div className="flex flex-wrap gap-2 mt-2 pt-2 border-t border-gray-100">
+          {alerts.map((alert, index) => (
+            <span
+              key={index}
+              className={`inline-flex items-center text-xs px-2 py-1 rounded-full
+                ${alert.level === 'danger' ? 'bg-red-100 text-red-800' :
+                  alert.level === 'warning' ? 'bg-yellow-100 text-yellow-800' :
+                  'bg-blue-100 text-blue-800'}`}
+              title={alert.message}
+            >
+              <span className="mr-1">{alert.icon}</span>
+              {alert.title}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
