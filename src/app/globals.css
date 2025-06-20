@@ -16,23 +16,37 @@
 }
 
 body {
-  background-color: var(--background);
+  background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 50%, #ede9fe 100%);
   color: var(--text);
+  min-height: 100vh;
+  background-attachment: fixed;
+}
+
+/* 全局陰影效果 */
+.shadow-soft {
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* 玻璃態效果 */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 /* 按鈕動畫效果 */
 .btn-primary {
-  @apply px-4 py-2 bg-blue-600 text-white rounded-lg 
+  @apply px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg 
          transition-all duration-200 
-         hover:bg-blue-700 hover:shadow-md
+         hover:from-blue-600 hover:to-blue-700 hover:shadow-lg hover:shadow-blue-500/25
          active:transform active:scale-95 
          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
 }
 
 .btn-secondary {
-  @apply px-4 py-2 bg-gray-100 text-gray-700 rounded-lg 
-         transition-all duration-200 
-         hover:bg-gray-200 hover:shadow-sm
+  @apply px-4 py-2 bg-white text-gray-700 rounded-lg 
+         transition-all duration-200 shadow-sm
+         hover:bg-gray-50 hover:shadow-md
          active:transform active:scale-95 
          focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2;
 }
@@ -40,14 +54,15 @@ body {
 /* 卡片懸浮效果 */
 .hover-card {
   @apply transition-all duration-300 
-         hover:shadow-lg hover:-translate-y-1;
+         hover:shadow-lg hover:-translate-y-1
+         hover:shadow-blue-500/10;
 }
 
 /* 輸入框效果 */
 .input-primary {
-  @apply w-full px-4 py-2 rounded-lg border border-gray-300
+  @apply w-full px-4 py-2 rounded-lg border border-gray-300 bg-white/70
          transition-all duration-200
-         focus:border-blue-500 focus:ring-2 focus:ring-blue-200
+         focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:bg-white
          placeholder:text-gray-400;
 }
 
@@ -63,21 +78,21 @@ body {
 /* 互動圖標 */
 .icon-button {
   @apply p-2 rounded-full transition-colors duration-200
-         hover:bg-gray-100 active:bg-gray-200
+         hover:bg-white/80 active:bg-white
          focus:outline-none focus:ring-2 focus:ring-gray-300;
 }
 
 /* 載入動畫 */
 .loading-spinner {
-  @apply animate-spin rounded-full border-4 border-gray-200;
+  @apply animate-spin rounded-full h-8 w-8 border-4 border-gray-200;
   border-top-color: var(--primary);
 }
 
 /* 天氣卡片效果 */
 .weather-card {
-  @apply bg-white rounded-lg shadow-sm p-4
+  @apply bg-white/80 rounded-xl shadow-soft p-6 glass-effect
          transition-all duration-300
-         hover:shadow-md;
+         hover:shadow-lg hover:bg-white/90;
 }
 
 .weather-info {
@@ -86,31 +101,29 @@ body {
 
 /* 日曆格子效果 */
 .calendar-cell {
-  @apply p-2 text-center relative border transition-colors duration-200
-         hover:bg-gray-50 cursor-pointer;
+  @apply p-2 text-center relative border border-transparent transition-colors duration-200
+         hover:bg-blue-50/80 cursor-pointer;
 }
 
 .calendar-cell.active {
-  @apply bg-blue-50 border-blue-200;
+  @apply bg-blue-50/90 border-blue-200;
 }
 
 .calendar-cell.today {
-  @apply font-bold text-blue-600;
+  @apply font-bold text-blue-600 ring-2 ring-blue-500/50;
 }
 
 /* 警告標籤 */
 .warning-badge {
-  @apply px-2 py-1 text-xs rounded-full
-         bg-yellow-100 text-yellow-800
+  @apply px-2 py-1 text-xs rounded-full bg-yellow-100/90 text-yellow-800
          transition-all duration-200
-         hover:bg-yellow-200;
+         hover:bg-yellow-200/90;
 }
 
 .danger-badge {
-  @apply px-2 py-1 text-xs rounded-full
-         bg-red-100 text-red-800
+  @apply px-2 py-1 text-xs rounded-full bg-red-100/90 text-red-800
          transition-all duration-200
-         hover:bg-red-200;
+         hover:bg-red-200/90;
 }
 
 /* 工具提示 */
@@ -137,12 +150,12 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-gray-100 rounded-full;
+  @apply bg-gray-100/50 rounded-full;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-gray-300 rounded-full
-         hover:bg-gray-400 transition-colors duration-200;
+  @apply bg-gray-300/80 rounded-full
+         hover:bg-gray-400/80 transition-colors duration-200;
 }
 
 /* 文字漸變效果 */
@@ -168,6 +181,10 @@ body {
   }
   
   .weather-card {
-    @apply p-3;
+    @apply p-4;
+  }
+
+  body {
+    @apply text-sm;
   }
 }
