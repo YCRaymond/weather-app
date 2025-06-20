@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { parseICS } from 'ical-js-parser';
+import { parseICSFile } from '../utils/icsParser';
 
 const CalendarUpload = ({ onEventsLoad }) => {
   const [isDragging, setIsDragging] = useState(false);
@@ -40,14 +40,11 @@ const CalendarUpload = ({ onEventsLoad }) => {
 
     try {
       const text = await file.text();
-      const icsData = parseICS(text);
+      const events = parseICSFile(text);
       
-      const events = icsData.events.map(event => ({
-        title: event.summary || '未命名事件',
-        start: new Date(event.dtstart.value),
-        end: new Date(event.dtend.value),
-        location: event.location || null
-      }));
+      if (events.length === 0) {
+        throw new Error('找不到任何事件');
+      }
 
       onEventsLoad(events);
       setError(null);
@@ -66,14 +63,11 @@ const CalendarUpload = ({ onEventsLoad }) => {
       
       const response = await fetch('/example.ics');
       const text = await response.text();
-      const icsData = parseICS(text);
+      const events = parseICSFile(text);
       
-      const events = icsData.events.map(event => ({
-        title: event.summary || '未命名事件',
-        start: new Date(event.dtstart.value),
-        end: new Date(event.dtend.value),
-        location: event.location || null
-      }));
+      if (events.length === 0) {
+        throw new Error('範例檔案中找不到任何事件');
+      }
 
       onEventsLoad(events);
     } catch (err) {
