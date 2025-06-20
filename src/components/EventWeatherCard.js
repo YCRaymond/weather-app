@@ -1,3 +1,5 @@
+import { generateWeatherAlerts } from '../utils/weatherAlerts';
+
 const EventWeatherCard = ({ event }) => {
   if (!event) return null;
 
@@ -66,70 +68,30 @@ const EventWeatherCard = ({ event }) => {
     return null;
   };
 
-  const getWarnings = (weatherData, weatherWarning, weatherForecast) => {
-    const warnings = [];
-
-    // 檢查天氣警報
-    if (weatherWarning?.Phenomena) {
-      warnings.push({
-        type: 'danger',
-        message: weatherWarning.Phenomena,
-        icon: '⚠️'
-      });
-    }
-
-    // 檢查溫度
-    const temp = getTemperature(weatherData, weatherForecast);
-    if (temp > 36) {
-      warnings.push({
-        type: 'danger',
-        message: '高溫警告',
-        icon: '🌡️'
-      });
-    } else if (temp > 32) {
-      warnings.push({
-        type: 'warning',
-        message: '炎熱',
-        icon: '☀️'
-      });
-    }
-
-    // 檢查降雨機率
-    const pop = weatherForecast?.weatherElements?.PoP?.[0]?.value;
-    if (pop && parseInt(pop) >= 70) {
-      warnings.push({
-        type: 'warning',
-        message: `降雨機率 ${pop}%`,
-        icon: '🌧️'
-      });
-    }
-
-    // 檢查紫外線
-    const uvi = weatherData?.H_UVI;
-    if (uvi >= 11) {
-      warnings.push({
-        type: 'danger',
-        message: '紫外線危險',
-        icon: '☀️'
-      });
-    } else if (uvi >= 8) {
-      warnings.push({
-        type: 'warning',
-        message: '紫外線過量',
-        icon: '☀️'
-      });
-    }
-
-    return warnings;
-  };
-
   const temp = getTemperature(event.weatherData, event.weatherForecast);
   const comfort = temp && event.weatherData ? 
     getComfortLevel(temp, event.weatherData.HUMD) : 
     null;
-  const warnings = getWarnings(event.weatherData, event.weatherWarning, event.weatherForecast);
   const weather = event.weatherData?.Weather || 
                  event.weatherForecast?.weatherElements?.Wx?.[0]?.value;
+
+  // 生成天氣提醒
+  const alerts = generateWeatherAlerts({
+    ...event.weatherData,
+    forecast: event.weatherForecast,
+    warnings: event.weatherWarning ? [event.weatherWarning] : []
+  });
+
+  const getAlertStyle = (level) => {
+    switch (level) {
+      case 'danger':
+        return 'bg-red-100 text-red-800';
+      case 'warning':
+        return 'bg-yellow-100 text-yellow-800';
+      default:
+        return 'bg-blue-100 text-blue-800';
+    }
+  };
 
   return (
     <div className="bg-white rounded-lg shadow-sm p-4 mb-4 border border-gray-200 hover:shadow-md transition-shadow">
@@ -155,33 +117,30 @@ const EventWeatherCard = ({ event }) => {
         </div>
       </div>
 
-      {(comfort || warnings.length > 0) && (
-        <div className="mt-3">
-          {comfort && (
-            <p className={`text-sm ${comfort.color} font-medium`}>
-              {comfort.text}・{comfort.description}
-            </p>
-          )}
-          
-          {warnings.length > 0 && (
-            <div className="mt-2 flex flex-wrap gap-2">
-              {warnings.map((warning, index) => (
-                <div
-                  key={index}
-                  className={`text-sm px-3 py-1 rounded-full inline-flex items-center ${
-                    warning.type === 'danger'
-                      ? 'bg-red-100 text-red-800'
-                      : 'bg-yellow-100 text-yellow-800'
-                  }`}
-                >
-                  <span className="mr-1">{warning.icon}</span>
-                  {warning.message}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+      {/* 舒適度和提醒區域 */}
+      <div className="mt-3 space-y-3">
+        {comfort && (
+          <p className={`text-sm ${comfort.color} font-medium`}>
+            {comfort.text}・{comfort.description}
+          </p>
+        )}
+        
+        {/* 天氣提醒 */}
+        {alerts.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {alerts.map((alert, index) => (
+              <div
+                key={index}
+                className={`text-sm px-3 py-1 rounded-full inline-flex items-center ${getAlertStyle(alert.level)}`}
+                title={alert.message}
+              >
+                <span className="mr-1">{alert.icon}</span>
+                {alert.title}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

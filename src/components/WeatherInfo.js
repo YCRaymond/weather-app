@@ -1,3 +1,5 @@
+import WeatherAlerts from './WeatherAlerts';
+
 const WeatherInfo = ({ weatherData }) => {
   if (!weatherData || weatherData.length === 0) {
     return (
@@ -101,89 +103,75 @@ const WeatherInfo = ({ weatherData }) => {
   const comfortColor = getComfortColor(comfort);
 
   return (
-    <div className="weather-card animate-fadeIn">
-      <h2 className="text-xl font-bold mb-4 flex items-center">
-        <svg className="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
-        </svg>
-        天氣資訊
-      </h2>
-      
-      <div className="space-y-6">
-        {/* 基本天氣資訊 */}
-        <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg group hover:bg-blue-100 transition-colors duration-200">
-          <div>
-            <p className="text-sm text-blue-600 mb-1">{data.LocationName || '觀測站'}</p>
-            <div className="flex items-center">
-              <span className="text-4xl mr-3">
-                {getWeatherIcon(weather, data.Temp)}
-              </span>
-              <p className="text-xl font-bold text-gray-800 group-hover:text-blue-700 transition-colors duration-200">
-                {weather}
-              </p>
-            </div>
-          </div>
-          <div className="text-right">
-            <p className="text-3xl font-bold text-gray-800 group-hover:text-blue-700 transition-colors duration-200">
-              {getTemperatureRange()}
-            </p>
-            <p className="text-sm text-blue-600">
-              降雨機率：{getRainProbability()}
-            </p>
-          </div>
-        </div>
-
-        {/* 詳細資訊 */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
-            <p className="text-gray-500 text-sm mb-1">體感</p>
-            <p className={`font-medium ${comfortColor}`}>{comfort}</p>
-          </div>
-          <div className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
-            <p className="text-gray-500 text-sm mb-1">濕度</p>
-            <p className="font-medium">
-              {data.HUMD ? `${(data.HUMD * 100).toFixed(0)}%` : 'N/A'}
-            </p>
-          </div>
-          <div className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
-            <p className="text-gray-500 text-sm mb-1">風速</p>
-            <p className="font-medium">
-              {data.WDSD ? `${data.WDSD}m/s` : 'N/A'}
-            </p>
-          </div>
-          <div className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
-            <p className="text-gray-500 text-sm mb-1">空氣</p>
-            <p className="font-medium">{getAirQualityLevel() || 'N/A'}</p>
-          </div>
-        </div>
-
-        {/* 警報資訊 */}
-        {data.warnings && data.warnings.length > 0 && (
-          <div className="animate-fadeIn">
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <p className="font-medium text-yellow-800 flex items-center">
-                <svg className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                </svg>
-                天氣警報
-              </p>
-              {data.warnings.map((warning, index) => (
-                <p key={index} className="mt-2 text-sm text-yellow-700">
-                  {warning.text}
-                </p>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* 觀測時間 */}
-        <div className="text-xs text-gray-400 flex items-center justify-end">
-          <svg className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+    <div className="space-y-6">
+      <div className="weather-card animate-fadeIn">
+        <h2 className="text-xl font-bold mb-4 flex items-center">
+          <svg className="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
           </svg>
-          {data.ObsTime ? formatDateTime(data.ObsTime) : '更新中'}
+          天氣資訊
+        </h2>
+        
+        <div className="space-y-6">
+          {/* 基本天氣資訊 */}
+          <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg group hover:bg-blue-100 transition-colors duration-200">
+            <div>
+              <p className="text-sm text-blue-600 mb-1">{data.LocationName || '觀測站'}</p>
+              <div className="flex items-center">
+                <span className="text-4xl mr-3">
+                  {getWeatherIcon(weather, data.Temp)}
+                </span>
+                <p className="text-xl font-bold text-gray-800 group-hover:text-blue-700 transition-colors duration-200">
+                  {weather}
+                </p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-3xl font-bold text-gray-800 group-hover:text-blue-700 transition-colors duration-200">
+                {getTemperatureRange()}
+              </p>
+              <p className="text-sm text-blue-600">
+                降雨機率：{getRainProbability()}
+              </p>
+            </div>
+          </div>
+
+          {/* 詳細資訊 */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
+              <p className="text-gray-500 text-sm mb-1">體感</p>
+              <p className={`font-medium ${comfortColor}`}>{comfort}</p>
+            </div>
+            <div className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
+              <p className="text-gray-500 text-sm mb-1">濕度</p>
+              <p className="font-medium">
+                {data.HUMD ? `${(data.HUMD * 100).toFixed(0)}%` : 'N/A'}
+              </p>
+            </div>
+            <div className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
+              <p className="text-gray-500 text-sm mb-1">風速</p>
+              <p className="font-medium">
+                {data.WDSD ? `${data.WDSD}m/s` : 'N/A'}
+              </p>
+            </div>
+            <div className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
+              <p className="text-gray-500 text-sm mb-1">空氣</p>
+              <p className="font-medium">{getAirQualityLevel() || 'N/A'}</p>
+            </div>
+          </div>
+
+          {/* 觀測時間 */}
+          <div className="text-xs text-gray-400 flex items-center justify-end">
+            <svg className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {data.ObsTime ? formatDateTime(data.ObsTime) : '更新中'}
+          </div>
         </div>
       </div>
+
+      {/* 天氣提醒區域 */}
+      <WeatherAlerts weatherData={data} />
     </div>
   );
 };
